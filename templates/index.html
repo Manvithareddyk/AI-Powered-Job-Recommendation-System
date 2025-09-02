@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Job Recommendation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>AI-Powered Job Recommendation System</h1>
+
+        <form method="POST">
+            <label>Skills (comma-separated):</label>
+            <input type="text" name="skills" placeholder="Python, SQL, NLP" required>
+
+            <label>Experience (years):</label>
+            <input type="number" name="experience" placeholder="2" required>
+
+            <label>Preferred Location:</label>
+            <input type="text" name="location" placeholder="Hyderabad, Remote">
+
+            <button type="submit">Get Recommendations</button>
+        </form>
+
+        {% if recommendations %}
+            <h2>Top Job Recommendations</h2>
+            <table>
+                <tr><th>Title</th><th>Location</th><th>Your Skills</th><th>Similarity</th><th>Skill Match %</th></tr>
+                {% for job in recommendations %}
+                    <tr>
+                        <td>{{ job.title }}</td>
+                        <td>{{ job.location }}</td>
+                        <td>{{ job.skills }}</td>
+                        <td>{{ (job.similarity * 100) | round(2) }}%</td>
+                        <td>{{ job.skill_match }}%</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+</body>
+</html>
