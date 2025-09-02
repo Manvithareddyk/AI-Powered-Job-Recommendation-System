@@ -3,6 +3,16 @@
 <head>
     <title>AI Job Recommendation</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .notice {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border: 1px solid #ffeeba;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -22,20 +32,33 @@
         </form>
 
         {% if recommendations %}
-            <h2>Top Job Recommendations</h2>
-            <table>
-                <tr><th>Title</th><th>Location</th><th>Your Skills</th><th>Similarity</th><th>Skill Match %</th></tr>
-                {% for job in recommendations %}
+            {% if recommendations|length == 0 %}
+                <div class="notice">
+                    ⚠️ No exact matches found. Showing closest jobs instead.
+                </div>
+            {% else %}
+                <h2>Top Job Recommendations</h2>
+                <table>
                     <tr>
-                        <td>{{ job.title }}</td>
-                        <td>{{ job.location }}</td>
-                        <td>{{ job.skills }}</td>
-                        <td>{{ (job.similarity * 100) | round(2) }}%</td>
-                        <td>{{ job.skill_match }}%</td>
+                        <th>Title</th>
+                        <th>Location</th>
+                        <th>Your Skills</th>
+                        <th>Similarity</th>
+                        <th>Skill Match %</th>
                     </tr>
-                {% endfor %}
-            </table>
+                    {% for job in recommendations %}
+                        <tr>
+                            <td>{{ job.title }}</td>
+                            <td>{{ job.location }}</td>
+                            <td>{{ job.skills }}</td>
+                            <td>{{ (job.similarity * 100) | round(2) }}%</td>
+                            <td>{{ job.skill_match }}%</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endif %}
         {% endif %}
     </div>
 </body>
 </html>
+
