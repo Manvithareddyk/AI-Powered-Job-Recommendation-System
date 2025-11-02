@@ -16,7 +16,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>AI-Powered Job Recommendation System</h1>
+        <div class="navbar">
+            <h1>AI-Powered Job Recommendation System</h1>
+            <div class="nav-links">
+                <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                <a href="{{ url_for('register') }}" class="nav-link">Register</a>
+            </div>
+        </div>
 
         <form method="POST">
             <label>Skills (comma-separated):</label>

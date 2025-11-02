@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .dashboard { max-width: 800px; margin: 0 auto; }
+        .welcome { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+        .resume-info { background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .resume-item { margin-bottom: 15px; }
+        .resume-label { font-weight: bold; display: inline-block; width: 120px; }
+        .no-resume { background: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+        .btn { display: inline-block; padding: 8px 15px; text-decoration: none; border-radius: 5px; margin-right: 10px; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-primary:hover { background: #0056b3; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+    <div class="container dashboard">
+        <h1>User Dashboard</h1>
+        <div class="welcome">
+            Welcome back, {{ phone }}!
+        </div>
+
+        {% if resume %}
+            <div class="resume-info">
+                <h2>Your Resume</h2>
+                <div class="resume-item">
+                    <span class="resume-label">Name:</span>
+                    <span>{{ resume[2] }}</span>
+                </div>
+                <div class="resume-item">
+                    <span class="resume-label">Skills:</span>
+                    <span>{{ resume[3] }}</span>
+                </div>
+                <div class="resume-item">
+                    <span class="resume-label">Education:</span>
+                    <span>{{ resume[4] if resume[4] else 'Not specified' }}</span>
+                </div>
+                <div class="resume-item">
+                    <span class="resume-label">Work Experience:</span>
+                    <span>{{ resume[5] if resume[5] else 'Not specified' }}</span>
+                </div>
+                <div class="resume-item">
+                    <span class="resume-label">Preferred Location:</span>
+                    <span>{{ resume[6] if resume[6] else 'Not specified' }}</span>
+                </div>
+            </div>
+        {% else %}
+            <div class="no-resume">
+                You haven't created a resume yet. Click below to create one.
+            </div>
+        {% endif %}
+
+        <div>
+            <a href="{{ url_for('resume') }}" class="btn btn-primary">Edit Resume</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

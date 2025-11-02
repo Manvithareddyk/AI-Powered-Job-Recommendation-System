@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .error { color: #dc3545; margin-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        
+        /* Drag-and-drop captcha styles */
+        .captcha-container {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        
+        .captcha-background {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+        
+        .captcha-puzzle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            cursor: move;
+            z-index: 10;
+        }
+        
+        .captcha-slot {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 2px dashed #fff;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 5;
+        }
+        
+        .captcha-hint {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .captcha-success { color: #28a745; }
+        .captcha-fail { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Login</h1>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="POST" onsubmit="return validateCaptcha()">
+            <div class="form-group">
+                <label>Phone Number:</label>
+                <input type="text" name="phone" placeholder="13800138000" required>
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" name="password" placeholder="Enter password" required>
+            </div>
+            <div class="form-group">
+                <label>Drag the puzzle piece to complete the captcha:</label>
+                <div class="captcha-container">
+                    <div class="captcha-background">
+                        <div class="captcha-slot" id="captchaSlot"></div>
+                        <div class="captcha-puzzle" id="captchaPuzzle" draggable="true"></div>
+                    </div>
+                </div>
+                <div class="captcha-hint" id="captchaHint">Drag the white puzzle piece to the dashed slot</div>
+                <input type="hidden" name="captcha_valid" id="captchaValid" value="false">
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <p style="margin-top: 15px;">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+    </div>
+
+    <script>
+        // Drag-and-drop captcha implementation
+        const puzzle = document.getElementById('captchaPuzzle');
+        const slot = document.getElementById('captchaSlot');
+        const hint = document.getElementById('captchaHint');
+        const validInput = document.getElementById('captchaValid');
+        
+        // Generate random positions for puzzle and slot
+        const containerWidth = 300;
+        const containerHeight = 150;
+        const puzzleSize = 50;
+        
+        const slotX = Math.floor(Math.random() * (containerWidth - puzzleSize - 20)) + 10;
+        const slotY = Math.floor(Math.random() * (containerHeight - puzzleSize - 20)) + 10;
+        
+        const puzzleX = Math.floor(Math.random() * (containerWidth - puzzleSize - 20)) + 10;
+        const puzzleY = Math.floor(Math.random() * (containerHeight - puzzleSize - 20)) + 10;
+        
+        slot.style.left = slotX + 'px';
+        slot.style.top = slotY + 'px';
+        
+        puzzle.style.left = puzzleX + 'px';
+        puzzle.style.top = puzzleY + 'px';
+        
+        // Drag and drop events
+        let offsetX, offsetY;
+        
+        puzzle.addEventListener('dragstart', (e) => {
+            offsetX = e.clientX - puzzle.getBoundingClientRect().left;
+            offsetY = e.clientY - puzzle.getBoundingClientRect().top;
+            e.dataTransfer.setData('text/plain', ''); // Required for Firefox
+        });
+        
+        puzzle.addEventListener('drag', (e) => {
+            const x = e.clientX - offsetX - puzzle.parentElement.getBoundingClientRect().left;
+            const y = e.clientY - offsetY - puzzle.parentElement.getBoundingClientRect().top;
+            
+            puzzle.style.left = Math.max(0, Math.min(x, containerWidth - puzzleSize)) + 'px';
+            puzzle.style.top = Math.max(0, Math.min(y, containerHeight - puzzleSize)) + 'px';
+            
+            // Check if puzzle is in slot
+            const puzzleRect = puzzle.getBoundingClientRect();
+            const slotRect = slot.getBoundingClientRect();
+            
+            const overlapX = Math.max(0, Math.min(puzzleRect.right, slotRect.right) - Math.max(puzzleRect.left, slotRect.left));
+            const overlapY = Math.max(0, Math.min(puzzleRect.bottom, slotRect.bottom) - Math.max(puzzleRect.top, slotRect.top));
+            
+            const overlapArea = overlapX * overlapY;
+            const puzzleArea = puzzleSize * puzzleSize;
+            
+            if (overlapArea / puzzleArea > 0.8) {
+                hint.textContent = 'Captcha completed!';
+                hint.className = 'captcha-hint captcha-success';
+                validInput.value = 'true';
+            } else {
+                hint.textContent = 'Drag the white puzzle piece to the dashed slot';
+                hint.className = 'captcha-hint';
+                validInput.value = 'false';
+            }
+        });
+        
+        puzzle.addEventListener('dragend', (e) => {
+            // Check final position
+            const puzzleRect = puzzle.getBoundingClientRect();
+            const slotRect = slot.getBoundingClientRect();
+            
+            const overlapX = Math.max(0, Math.min(puzzleRect.right, slotRect.right) - Math.max(puzzleRect.left, slotRect.left));
+            const overlapY = Math.max(0, Math.min(puzzleRect.bottom, slotRect.bottom) - Math.max(puzzleRect.top, slotRect.top));
+            
+            const overlapArea = overlapX * overlapY;
+            const puzzleArea = puzzleSize * puzzleSize;
+            
+            if (overlapArea / puzzleArea > 0.8) {
+                // Snap to slot
+                puzzle.style.left = slotX + 'px';
+                puzzle.style.top = slotY + 'px';
+                hint.textContent = 'Captcha completed!';
+                hint.className = 'captcha-hint captcha-success';
+                validInput.value = 'true';
+            } else {
+                // Reset to original position
+                puzzle.style.left = puzzleX + 'px';
+                puzzle.style.top = puzzleY + 'px';
+                hint.textContent = 'Drag the white puzzle piece to the dashed slot';
+                hint.className = 'captcha-hint';
+                validInput.value = 'false';
+            }
+        });
+        
+        function validateCaptcha() {
+            if (validInput.value !== 'true') {
+                hint.textContent = 'Please complete the captcha first';
+                hint.className = 'captcha-hint captcha-fail';
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
