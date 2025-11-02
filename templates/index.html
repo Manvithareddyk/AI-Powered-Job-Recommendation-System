@@ -18,15 +18,20 @@
     <div class="container">
         <h1>AI-Powered Job Recommendation System</h1>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
+            <h3>Option 1: Upload Resume</h3>
+            <input type="file" name="resume" accept=".pdf,.docx,.doc">
+            <p>Supported formats: PDF, Word (.docx, .doc)</p>
+
+            <h3>Option 2: Enter Details Manually</h3>
             <label>Skills (comma-separated):</label>
-            <input type="text" name="skills" placeholder="Python, SQL, NLP" required>
+            <input type="text" name="skills" placeholder="Python, SQL, NLP" value="{{ skills }}">
 
             <label>Experience (years):</label>
-            <input type="number" name="experience" placeholder="2" required>
+            <input type="number" name="experience" placeholder="2" value="{{ experience }}">
 
             <label>Preferred Location:</label>
-            <input type="text" name="location" placeholder="Hyderabad, Remote">
+            <input type="text" name="location" placeholder="Hyderabad, Remote" value="{{ location }}">
 
             <button type="submit">Get Recommendations</button>
         </form>

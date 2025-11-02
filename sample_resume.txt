@@ -1,0 +1,21 @@
+John Doe
+Software Engineer
+
+Contact Information:
+Email: john.doe@example.com
+Phone: 123-456-7890
+Location: Hyderabad
+
+Skills:
+Python, Java, SQL, Machine Learning, Data Analysis, Django, Flask
+
+Work Experience:
+Software Engineer at ABC Company (2019 - Present)
+- Developed and maintained web applications using Python and Django
+- Worked with SQL databases to design and optimize queries
+- Implemented machine learning models for data analysis
+
+Total Experience: 4 years
+
+Education:
+Bachelor of Technology in Computer Science from XYZ University (2015 - 2019)
