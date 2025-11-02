@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .error { color: #dc3545; margin-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 4px; }
+        textarea { resize: vertical; min-height: 80px; }
+        .btn { display: inline-block; padding: 8px 15px; text-decoration: none; border-radius: 5px; margin-right: 10px; }
+        .btn-primary { background: #007bff; color: white; border: none; cursor: pointer; }
+        .btn-primary:hover { background: #0056b3; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resume Management</h1>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="POST">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Your full name" value="{{ resume[2] if resume else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="skills">Skills (comma-separated):</label>
+                <input type="text" id="skills" name="skills" placeholder="Python, SQL, Machine Learning" value="{{ resume[3] if resume else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="education">Education:</label>
+                <textarea id="education" name="education" placeholder="Your educational background">{{ resume[4] if resume else '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="work_experience">Work Experience:</label>
+                <textarea id="work_experience" name="work_experience" placeholder="Your work experience">{{ resume[5] if resume else '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="preferred_location">Preferred Location:</label>
+                <input type="text" id="preferred_location" name="preferred_location" placeholder="City or remote" value="{{ resume[6] if resume else '' }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Resume</button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>
